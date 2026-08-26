@@ -5,6 +5,7 @@ const ApiError = require('../utils/apiError');
 const { isInMemory } = require('../config/db');
 const memoryStore = require('../utils/memoryStore');
 const User = require('../models/User');
+const resendIntegration = require('../integrations/resendIntegration');
 
 class AuthService {
   async register({ name, email, password, role = 'operator' }) {
@@ -34,6 +35,13 @@ class AuthService {
         { expiresIn: '7d' }
       );
 
+      // Async email notification via Resend
+      resendIntegration.sendEmail({
+        to: normalizedEmail,
+        subject: 'Welcome to Agentflow_AI',
+        html: `<h2>Welcome to Agentflow_AI, ${name}!</h2><p>Your operator account has been activated successfully.</p>`,
+      }).catch(err => console.warn('Resend welcome notification skipped:', err.message));
+
       const userResponse = { ...newUser };
       delete userResponse.password;
 
@@ -53,6 +61,14 @@ class AuthService {
       });
 
       const token = user.generateAuthToken();
+
+      // Async email notification via Resend
+      resendIntegration.sendEmail({
+        to: normalizedEmail,
+        subject: 'Welcome to Agentflow_AI',
+        html: `<h2>Welcome to Agentflow_AI, ${name}!</h2><p>Your operator account has been activated successfully.</p>`,
+      }).catch(err => console.warn('Resend welcome notification skipped:', err.message));
+
       const userResponse = user.toObject();
       delete userResponse.password;
 
