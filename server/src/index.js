@@ -27,8 +27,13 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 initSocket(server, env.CLIENT_URL);
 
-// Security & Utility Middlewares (Flexible CORS for production Vercel domains)
-app.use(helmet({ contentSecurityPolicy: false }));
+// Security & Utility Middlewares (Allow cross-origin resource policy for production Vercel frontend)
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: false,
+}));
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
