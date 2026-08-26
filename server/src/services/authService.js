@@ -98,8 +98,8 @@ class AuthService {
         throw new ApiError(401, 'Invalid email or password');
       }
 
-      user.lastLogin = new Date();
-      await user.save();
+      // Update lastLogin without triggering user.save() password re-hashing
+      await User.findByIdAndUpdate(user._id, { lastLogin: new Date() });
 
       const token = user.generateAuthToken();
       const userResponse = user.toObject();
