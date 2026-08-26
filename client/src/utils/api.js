@@ -1,17 +1,16 @@
 import axios from 'axios';
 
-// Guaranteed non-empty base URL resolution
+// Guaranteed clean base URL resolution without trailing slashes
 const getApiBaseUrl = () => {
+  let url = '';
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== '') {
-    return process.env.NEXT_PUBLIC_API_URL;
+    url = process.env.NEXT_PUBLIC_API_URL.trim();
+  } else if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    url = 'https://agentic-ai-platform-w1b0.onrender.com/api';
+  } else {
+    url = 'http://localhost:5000/api';
   }
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host !== 'localhost' && host !== '127.0.0.1') {
-      return 'https://agentic-ai-platform-w1b0.onrender.com/api';
-    }
-  }
-  return 'http://localhost:5000/api';
+  return url.replace(/\/+$/, '');
 };
 
 const api = axios.create({

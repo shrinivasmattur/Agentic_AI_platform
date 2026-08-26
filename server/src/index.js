@@ -27,6 +27,12 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 initSocket(server, env.CLIENT_URL);
 
+// Sanitize URL paths to prevent double slashes (e.g., /api//auth/login -> /api/auth/login)
+app.use((req, res, next) => {
+  req.url = req.url.replace(/\/{2,}/g, '/');
+  next();
+});
+
 // Security & Utility Middlewares (Allow cross-origin resource policy for production Vercel frontend)
 app.use(helmet({
   contentSecurityPolicy: false,
