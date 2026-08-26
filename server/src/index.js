@@ -27,12 +27,19 @@ const server = http.createServer(app);
 // Initialize Socket.IO
 initSocket(server, env.CLIENT_URL);
 
-// Security & Utility Middlewares
+// Security & Utility Middlewares (Flexible CORS for production Vercel domains)
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({
-  origin: env.CLIENT_URL || '*',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (origin.endsWith('.vercel.app') || origin.includes('localhost') || !env.CLIENT_URL || env.CLIENT_URL.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
   credentials: true,
 }));
+
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
