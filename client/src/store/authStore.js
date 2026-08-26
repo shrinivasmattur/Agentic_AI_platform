@@ -50,7 +50,7 @@ export const useAuthStore = create((set, get) => ({
       set({ user, token, isAuthenticated: true, isLoading: false, error: null });
       return { success: true };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Login failed. Please check credentials.';
+      const errorMessage = err.response?.data?.message || err.message || 'Login failed. Please check credentials.';
       set({ isLoading: false, error: errorMessage });
       return { success: false, error: errorMessage };
     }
@@ -68,7 +68,8 @@ export const useAuthStore = create((set, get) => ({
       set({ user, token, isAuthenticated: true, isLoading: false, error: null });
       return { success: true };
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      const apiHost = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const errorMessage = err.response?.data?.message || `${err.message} (Connecting to: ${apiHost})`;
       set({ isLoading: false, error: errorMessage });
       return { success: false, error: errorMessage };
     }
