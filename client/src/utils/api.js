@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// Default directly to your live production Render backend
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://agentic-ai-platform-w1b0.onrender.com/api';
 
 console.log('📡 Initializing API Client with Base URL:', API_BASE_URL);
 
@@ -26,7 +27,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle authentication errors & network failures
+// Response interceptor to handle authentication errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
