@@ -1,21 +1,28 @@
 import axios from 'axios';
 
-// Default directly to your live production Render backend
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://agentic-ai-platform-w1b0.onrender.com/api';
-
-console.log('📡 Initializing API Client with Base URL:', API_BASE_URL);
+// Dynamic host resolution: Automatically connects to live Render backend on Vercel, and local backend on localhost
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      return 'https://agentic-ai-platform-w1b0.onrender.com/api';
+    }
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+};
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: getApiBaseUrl(),
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000,
 });
 
-// Request interceptor to attach JWT token
+// Update baseURL on every request in case window loaded after module init
 api.interceptors.request.use(
   (config) => {
+    config.baseURL = getApiBaseUrl();
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('agentflow_token');
       if (token) {

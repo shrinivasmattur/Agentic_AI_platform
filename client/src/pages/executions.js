@@ -22,7 +22,15 @@ import {
   X
 } from 'lucide-react';
 
-const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
+const getSocketUrl = () => {
+  if (typeof window !== 'undefined') {
+    const host = window.location.hostname;
+    if (host !== 'localhost' && host !== '127.0.0.1') {
+      return 'https://agentic-ai-platform-w1b0.onrender.com';
+    }
+  }
+  return process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
+};
 
 const AGENT_BADGE_COLORS = {
   planner: 'bg-primary-600/20 text-primary-400 border-primary-500/30',
@@ -64,7 +72,7 @@ export default function ExecutionsPage() {
 
   // Setup Socket.IO listener for live timeline updates
   useEffect(() => {
-    const socket = io(SOCKET_URL, { transports: ['websocket', 'polling'] });
+    const socket = io(getSocketUrl(), { transports: ['websocket', 'polling'] });
 
     socket.on('agent:event', (eventData) => {
       console.log('⚡ Socket Live Agent Event received:', eventData);
