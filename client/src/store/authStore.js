@@ -50,10 +50,9 @@ export const useAuthStore = create((set, get) => ({
       set({ user, token, isAuthenticated: true, isLoading: false, error: null });
       return { success: true };
     } catch (err) {
-      const apiHost = process.env.NEXT_PUBLIC_API_URL || 'https://agentic-ai-platform-w1b0.onrender.com/api';
-      const errorMessage = err.response?.data?.message || `${err.message} (Target URL: ${apiHost}/auth/login)`;
-      set({ isLoading: false, error: errorMessage });
-      return { success: false, error: errorMessage };
+      const msg = err.response?.data?.message || err.message || 'Login failed';
+      set({ isLoading: false, error: msg });
+      return { success: false, error: msg };
     }
   },
 
@@ -69,10 +68,9 @@ export const useAuthStore = create((set, get) => ({
       set({ user, token, isAuthenticated: true, isLoading: false, error: null });
       return { success: true };
     } catch (err) {
-      const apiHost = process.env.NEXT_PUBLIC_API_URL || 'https://agentic-ai-platform-w1b0.onrender.com/api';
-      const errorMessage = err.response?.data?.message || `${err.message} (Target URL: ${apiHost}/auth/register)`;
-      set({ isLoading: false, error: errorMessage });
-      return { success: false, error: errorMessage };
+      const msg = err.response?.data?.message || err.message || 'Registration failed';
+      set({ isLoading: false, error: msg });
+      return { success: false, error: msg };
     }
   },
 
