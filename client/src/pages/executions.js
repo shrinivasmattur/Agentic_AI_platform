@@ -23,14 +23,18 @@ import {
 } from 'lucide-react';
 
 const getSocketUrl = () => {
-  if (typeof window !== 'undefined') {
-    const host = window.location.hostname;
-    if (host !== 'localhost' && host !== '127.0.0.1') {
-      return 'https://agentic-ai-platform-w1b0.onrender.com';
-    }
+  if (process.env.NEXT_PUBLIC_SOCKET_URL && process.env.NEXT_PUBLIC_SOCKET_URL.trim() !== '') {
+    return process.env.NEXT_PUBLIC_SOCKET_URL.trim().replace(/\/+$/, '');
   }
-  return process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:5000';
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.trim() !== '') {
+    return process.env.NEXT_PUBLIC_API_URL.trim().replace(/\/api\/?$/, '').replace(/\/+$/, '');
+  }
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return window.location.origin.replace(/\/+$/, '');
+  }
+  return 'http://localhost:5000';
 };
+
 
 const AGENT_BADGE_COLORS = {
   planner: 'bg-primary-600/20 text-primary-400 border-primary-500/30',

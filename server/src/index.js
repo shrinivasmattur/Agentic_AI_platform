@@ -40,16 +40,31 @@ app.use(helmet({
   crossOriginOpenerPolicy: false,
 }));
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
+    // Allow non-browser requests (Postman, curl, server-to-server)
     if (!origin) return callback(null, true);
-    if (origin.endsWith('.vercel.app') || origin.includes('localhost') || !env.CLIENT_URL || env.CLIENT_URL.includes(origin)) {
+    // Allow Vercel deployments, localhost, or matching CLIENT_URL
+    if (
+      origin.endsWith('.vercel.app') ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      !env.CLIENT_URL ||
+      env.CLIENT_URL.includes(origin) ||
+      origin === env.CLIENT_URL
+    ) {
       return callback(null, true);
     }
     return callback(null, true);
   },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
